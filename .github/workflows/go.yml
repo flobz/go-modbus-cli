@@ -10,6 +10,7 @@ jobs:
     name: release linux/386
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@master
     - name: compile and release
       uses: ngs/go-release.action@v1.0.2
       env:
