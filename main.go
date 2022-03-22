@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/binary"
 	"flag"
-	"github.com/goburrow/modbus"
 	"fmt"
 	"log"
 	"math"
 	"strconv"
+
+	"github.com/goburrow/modbus"
 )
 
 func prepareFlags() (*string, *int, *string, *int, *int) {
@@ -59,6 +60,10 @@ func main() {
 		break
 	case "readCoils":
 		resp, err = readCoils(client, *address, *size)
+		break
+	case "readRegister":
+		resp, err = readRegister(client, *address, *size)
+		break
 	default:
 		fmt.Println("Unknown operation - aborting")
 		fmt.Println("Known operations:")
@@ -67,7 +72,8 @@ func main() {
 	 	fmt.Println(" writeMultipleCoils")
 	 	fmt.Println(" writeSingleRegister")
 	 	fmt.Println(" readCoils")
-	 }
+	 	fmt.Println(" readRegister")
+	}
 	if len(resp) > 1 {
 		fmt.Println(resp)
 	} else if len(resp) == 1 {
@@ -184,4 +190,22 @@ func writeMultipleCoils(client modbus.Client, address int, values []string) ([]b
 
 func readCoils(client modbus.Client, address int, size int) (results []byte, err error) {
 	return client.ReadCoils(uint16(address), uint16(size))
+}
+
+func readRegister(client modbus.Client, address int, size int) (results []byte, err error) {
+	res, error := client.ReadHoldingRegisters(uint16(address), uint16(size))
+	var data uint64
+	switch size {
+	case 1:
+		data = uint64(binary.BigEndian.Uint16(res))
+		break
+	case 2:
+		data = uint64(binary.BigEndian.Uint32(res))
+		break
+	case 4:
+		data = uint64(binary.BigEndian.Uint64(res))
+		break
+	}
+	fmt.Println(data, res)
+	return nil, error
 }
