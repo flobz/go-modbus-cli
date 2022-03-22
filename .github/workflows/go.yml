@@ -12,4 +12,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GOARCH: "arm"
         GOOS: linux
-        EXTRA_FILES: " "
+        EXTRA_FILES: "README.md"
