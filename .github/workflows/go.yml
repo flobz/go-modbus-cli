@@ -1,0 +1,19 @@
+name: Go
+on:
+  release:
+    types: [published]
+jobs:
+  release-linux-arm:
+    name: release linux/386
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: compile and release
+      uses: flobz/go-release.action@v1.0.4
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GOARCH: "arm"
+        GOOS: linux
+        EXTRA_FILES: "LICENSE"
+        PROJECT_NAME: "modbus-cli"
+        CMD_PATH: -o modbus-cli
