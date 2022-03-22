@@ -1,10 +1,5 @@
 name: Go
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
+on: release
 jobs:
   release-linux-arm:
     name: release linux/386
