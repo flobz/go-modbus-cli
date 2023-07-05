@@ -12,14 +12,15 @@ import (
 	"github.com/goburrow/modbus"
 )
 
-func prepareFlags() (*string, *int, *string, *int, *int) {
+func prepareFlags() (*string, *int, *string, *int, *int, *int) {
 	host := flag.String("host", "", "Defines the host to be addressed")
 	port := flag.Int("port", 502, "Can be used to override the port")
 	operation := flag.String("operation", "", "Defines which operation should be performed")
 	address := flag.Int("address", -1, "Address to be used")
 	size := flag.Int("size", -1, "Size for reading how many coils/registers etc")
+	slaveId := flag.Int("slaveId", 1, "Modbus slave id")
 
-	return host, port, operation, address, size
+	return host, port, operation, address, size, slaveId
 }
 
 func convertToByteArray(values []string) ([]byte, error) {
@@ -35,9 +36,9 @@ func convertToByteArray(values []string) ([]byte, error) {
 }
 
 func main() {
-	host, port, operation, address, size := prepareFlags()
+	host, port, operation, address, size, slaveId := prepareFlags()
 	flag.Parse()
-	client, err := initConnection(*host, *port)
+	client, err := initConnection(*host, *port, *slaveId)
 	valuesAsString := flag.Args()
 
 	if err != nil {
@@ -84,9 +85,10 @@ func main() {
 	}
 }
 
-func initConnection(host string, port int) (modbus.Client, error) {
+func initConnection(host string, port int, slaveId int) (modbus.Client, error) {
 	hostPort := host + ":" + strconv.Itoa(port)
 	handler := modbus.NewTCPClientHandler(hostPort)
+	handler.SlaveId=byte(slaveId);
 	err := handler.Connect()
 	if err != nil {
 		return nil, err
